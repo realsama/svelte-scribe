@@ -36,6 +36,8 @@ export const loadSchema = async (schemaPath: string) => {
     const tags = await readModule(`${schemaDirectory}/tags`);
     const nodes = await readModule(`${schemaDirectory}/nodes`);
     const functions = await readModule(`${schemaDirectory}/functions`);
+    const variables = await readModule(`${schemaDirectory}/variables`);
+    const partials = await readModule(`${schemaDirectory}/partials`);
 
-    return { config, tags, nodes, functions };
+    return { tags, nodes, functions, variables, partials, ...config };
 };

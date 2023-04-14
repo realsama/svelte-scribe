@@ -6,7 +6,7 @@
 
 {#each children as child}
     {#if typeof child === 'string'}{child}{/if}
-    {#if child.children}
+    {#if child?.children}
         {#if components.has(child.name)}
             <svelte:component this={components.get(child.name)} {...child.attributes}>
                 <svelte:self children={child.children} />
