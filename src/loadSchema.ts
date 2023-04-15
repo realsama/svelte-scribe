@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import Markdoc, { Node } from '@markdoc/markdoc';
 
 const DEFAULT_SCHEMA_PATH = './markdoc';
 
@@ -21,7 +22,10 @@ const readModule = async (modulePath: string) => {
     }
 };
 
-export const loadSchema = async (schemaPath: string) => {
+export const loadSchema = async (
+    schemaPath: string,
+    supportedExtensions: Array<string>
+) => {
     const schemaDirectory = path.posix.resolve(schemaPath);
 
     const schemaDirectoryExists = fs.existsSync(schemaDirectory);
@@ -37,7 +41,25 @@ export const loadSchema = async (schemaPath: string) => {
     const nodes = await readModule(`${schemaDirectory}/nodes`);
     const functions = await readModule(`${schemaDirectory}/functions`);
     const variables = await readModule(`${schemaDirectory}/variables`);
-    const partials = await readModule(`${schemaDirectory}/partials`);
+    const partials = processPartials(`${schemaDirectory}/partials`, supportedExtensions);
 
     return { tags, nodes, functions, variables, partials, ...config };
+};
+
+const processPartials = (directory: string, supportedExtensions: Array<string>) => {
+    let partials: { [key: string]: Node } = {};
+
+    const files = fs.readdirSync(directory);
+
+    files.forEach((file) => {
+        const extension = path.extname(file);
+
+        if (supportedExtensions.includes(extension)) {
+            const content = fs.readFileSync(path.join(directory, file), 'utf8');
+
+            partials[file] = Markdoc.parse(content);
+        }
+    });
+
+    return partials;
 };

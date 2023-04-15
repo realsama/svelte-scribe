@@ -22,7 +22,7 @@ const markdoc = (options: Options = {}) => {
     const supportedExtensions = options.extensions || ['.md'];
     const componentsPath = options.components || DEFAULT_COMPONENTS_PATH;
 
-    const getImportStatements = (components: [string, string][]) => {
+    const getImportStatements = (components: Map<string, string>) => {
         let importStatements = '';
         for (const [name, path] of components) {
             importStatements += `import ${name} from '${path}';\n`;
@@ -35,7 +35,7 @@ const markdoc = (options: Options = {}) => {
             return null;
         }
 
-        const schema = await loadSchema(schemaPath);
+        const schema = await loadSchema(schemaPath, supportedExtensions);
 
         const ast = Markdoc.parse(content);
         const astWithFrontmatter = addFrontmatter(ast, schema);
